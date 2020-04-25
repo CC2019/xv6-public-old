@@ -98,3 +98,12 @@ sys_gettime(void) {
   cmostime(d);
   return 0;
 }
+
+int
+sys_settickets(void) {
+  int tickets;
+  if(argint(0, &tickets) < 0)
+    return -1;
+  proc->tickets = tickets;
+  return 0;
+}

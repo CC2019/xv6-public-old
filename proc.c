@@ -48,6 +48,7 @@ allocproc(void)
   return 0;
 
 found:
+  p->tickets = 20; 		// New process is assigned 20 lottery tickets
   p->state = EMBRYO;
   p->pid = nextpid++;
   release(&ptable.lock);
@@ -270,6 +271,9 @@ scheduler(void)
 {
   struct proc *p;
   int foundproc = 1;
+  long cur_tickets = 0;
+  long target_ticket = 0;
+  long total_tickets = 0;
 
   for(;;){
     // Enable interrupts on this processor.
@@ -280,10 +284,29 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+    
+    //reset these variables in each loop!
+    cur_tickets = 0;
+    target_ticket = 0;
+    total_tickets = 0;
+    
+    //total_tickets = get_total_tickets();
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
-
+      total_tickets += p->tickets;
+    }
+    target_ticket = random_at_most(total_tickets);
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+        continue;
+      
+      if((cur_tickets + p->tickets) < target_ticket){
+        cur_tickets += p->tickets;
+	continue;
+      }
+      cur_tickets += p->tickets;
+      //if(cur_tickets >= target_ticket){      
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -297,6 +320,8 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
+      break;      // each time select a process we need to count the total again
+      //}
     }
     release(&ptable.lock);
 
