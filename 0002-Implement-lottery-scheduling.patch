@@ -1,0 +1,32 @@
+From d76254ca82d09ca271e4d5168e83bce84cac3419 Mon Sep 17 00:00:00 2001
+From: CC2019 <458123902@qq.com>
+Date: Sat, 25 Apr 2020 18:37:33 -0400
+Subject: [PATCH 2/2] Implement lottery scheduling
+
+---
+ proc.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/proc.c b/proc.c
+index 9ab3e38..850710f 100644
+--- a/proc.c
++++ b/proc.c
+@@ -306,7 +306,6 @@ scheduler(void)
+ 	continue;
+       }
+       cur_tickets += p->tickets;
+-      //if(cur_tickets >= target_ticket){      
+       // Switch to chosen process.  It is the process's job
+       // to release ptable.lock and then reacquire it
+       // before jumping back to us.
+@@ -321,7 +320,6 @@ scheduler(void)
+       // It should have changed its p->state before coming back.
+       proc = 0;
+       break;      // each time select a process we need to count the total again
+-      //}
+     }
+     release(&ptable.lock);
+ 
+-- 
+1.9.1
+
