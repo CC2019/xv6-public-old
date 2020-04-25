@@ -306,7 +306,6 @@ scheduler(void)
 	continue;
       }
       cur_tickets += p->tickets;
-      //if(cur_tickets >= target_ticket){      
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
@@ -321,7 +320,6 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       proc = 0;
       break;      // each time select a process we need to count the total again
-      //}
     }
     release(&ptable.lock);
 
